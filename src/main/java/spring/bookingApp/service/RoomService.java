@@ -9,7 +9,6 @@ import spring.bookingApp.model.Room;
 import spring.bookingApp.repository.HotelRepository;
 import spring.bookingApp.repository.RoomRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service

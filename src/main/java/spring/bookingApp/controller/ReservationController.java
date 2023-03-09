@@ -1,5 +1,7 @@
 package spring.bookingApp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import spring.bookingApp.dto.AddReservationDTO;
 import spring.bookingApp.dto.AvailabilityOfHotelRoomsDTO;
@@ -9,6 +11,8 @@ import spring.bookingApp.model.Room;
 import spring.bookingApp.service.ReservationService;
 
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.status;
 
 @RestController
 @RequestMapping("/reservation")
@@ -21,25 +25,25 @@ public class ReservationController {
     }
 
     @PostMapping("/add")
-    public Reservation addReservation(@RequestBody AddReservationDTO addReservationDTO){
-        return reservationService.addReservation(addReservationDTO);
+    public ResponseEntity<Reservation> addReservation(@RequestBody AddReservationDTO addReservationDTO){
+        return status(HttpStatus.OK).body(reservationService.addReservation(addReservationDTO));
     }
     @GetMapping("/availability")
-    public List<Room> getAvailableRooms(@RequestBody GetAvailabilityDTO getAvailabilityDTO){
+    public ResponseEntity<List<Room>> getAvailableRooms(@RequestBody GetAvailabilityDTO getAvailabilityDTO){
         //1. de facut un DTO ca sa prindem informatiile startDate, endDate, numberOfpersons
-        return reservationService.getAvailableRooms(getAvailabilityDTO.getStartDate(), getAvailabilityDTO.getEndDate(), getAvailabilityDTO.getNumberOfPersons());
+        return status(HttpStatus.OK).body(reservationService.getAvailableRooms(getAvailabilityDTO.getStartDate(), getAvailabilityDTO.getEndDate(), getAvailabilityDTO.getNumberOfPersons()));
     }
     @GetMapping("/numberOfAvailableRooms")
-    public Long getNumberOfAvailableRooms(@RequestBody AvailabilityOfHotelRoomsDTO availabilityOfHotelRoomsDTO){
-        return reservationService.getNumberOfAvailableRooms(availabilityOfHotelRoomsDTO.getStartDate(), availabilityOfHotelRoomsDTO.getEndDate(), availabilityOfHotelRoomsDTO.getIdHotel());
+    public  ResponseEntity<Long> getNumberOfAvailableRooms(@RequestBody AvailabilityOfHotelRoomsDTO availabilityOfHotelRoomsDTO){
+        return status(HttpStatus.OK).body(reservationService.getNumberOfAvailableRooms(availabilityOfHotelRoomsDTO.getStartDate(), availabilityOfHotelRoomsDTO.getEndDate(), availabilityOfHotelRoomsDTO.getIdHotel()));
     }
     @GetMapping("/priceForAllReservations")
-    public long getPriceForAllReservationsBetween(@RequestBody AvailabilityOfHotelRoomsDTO availabilityOfHotelRoomsDTO) {
-        return reservationService.getPriceForAllReservationsBetween(availabilityOfHotelRoomsDTO.getStartDate(), availabilityOfHotelRoomsDTO.getEndDate(), availabilityOfHotelRoomsDTO.getIdHotel());
+    public  ResponseEntity<Long> getPriceForAllReservationsBetween(@RequestBody AvailabilityOfHotelRoomsDTO availabilityOfHotelRoomsDTO) {
+        return status(HttpStatus.OK).body(reservationService.getPriceForAllReservationsBetween(availabilityOfHotelRoomsDTO.getStartDate(), availabilityOfHotelRoomsDTO.getEndDate(), availabilityOfHotelRoomsDTO.getIdHotel()));
     }
 
     @GetMapping("/availableRoomsOrderedByPrice")
-    public List<Room> getAvailableRoomsOrderedByPrice(@RequestBody GetAvailabilityDTO getAvailabilityDTO) {
-        return reservationService.getAvailableRoomsOrderedByPriceBy(getAvailabilityDTO.getStartDate(), getAvailabilityDTO.getEndDate(), getAvailabilityDTO.getNumberOfPersons());
+    public ResponseEntity<List<Room>> getAvailableRoomsOrderedByPrice(@RequestBody GetAvailabilityDTO getAvailabilityDTO) {
+        return status(HttpStatus.OK).body(reservationService.getAvailableRoomsOrderedByPriceBy(getAvailabilityDTO.getStartDate(), getAvailabilityDTO.getEndDate(), getAvailabilityDTO.getNumberOfPersons()));
     }
 }

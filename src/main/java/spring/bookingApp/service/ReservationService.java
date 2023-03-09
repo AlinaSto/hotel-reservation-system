@@ -1,4 +1,5 @@
 package spring.bookingApp.service;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,10 +13,10 @@ import spring.bookingApp.repository.ReservationRepository;
 import spring.bookingApp.repository.RoomRepository;
 import spring.bookingApp.repository.UserRepository;
 
+import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,21 +28,28 @@ public class ReservationService {
     private RoomRepository roomRepository;
 
     private HotelRepository hotelRepository;
+    private MailService mailService;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, RoomRepository roomRepository, HotelRepository hotelRepository) {
+    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, RoomRepository roomRepository, HotelRepository hotelRepository, MailService mailService) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.hotelRepository = hotelRepository;
+        this.mailService = mailService;
     }
 
+    //TODO
+    //in functie de locatia hotelului rezervarii, facem un call la openAPI cu prompt-ul : Recomanda-mi obiective turistice in + <locatia hotelului>
+    //mai facem o entitate Address. Un hotell are o adresa (onte-toone)
+    //Adresa va avea strada, numar, oras.
+    //voi da ca si raspuns un ReservationReponseDTO
     public Reservation addReservation(AddReservationDTO addReservationDTO) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User foundUser = userRepository.findUserByUsername(userDetails.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         List<Room> foundRooms = roomRepository.findAllById(addReservationDTO.getRoomsIds());
-        if (foundRooms.size() != addReservationDTO.getRoomsIds().size()){
+        if (foundRooms.size() != addReservationDTO.getRoomsIds().size()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "one or more of the rooms was not found");
         }
         for (Room room : foundRooms) {
@@ -66,12 +74,6 @@ public class ReservationService {
     }
 
     public List<Room> getAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer numberOfPersons) {
-        //ma duc prin toate hotelurile
-        //ma duc prin toate camerele de la fiecare hotel
-        //pentru o camera ma duc prin toate rezervarile
-        //verific daca exista cel putin o rezervare care interfereaza cu startDate si endDate
-        //o rezervare interfereaza cu sD si eD daca are checkin intre sD si eD sau daca are checkout intre sD si eD
-        //daca nicio rezervare nu interfereaza cu sD si eD pentru camera curenta, adaug camera in lista rezultat (inseamna ca e available)
 
 //        List<Room> availableRooms = new ArrayList<>();
         List<Hotel> foundHotels = hotelRepository.findAll();
@@ -102,7 +104,7 @@ public class ReservationService {
     }
 
     public boolean hasRoomNonInterferingReservations(Room room, LocalDateTime startDate, LocalDateTime endDate) {
-        for (RoomReservation roomReservation :  room.getRoomReservationList()) {
+        for (RoomReservation roomReservation : room.getRoomReservationList()) {
             if (!(roomReservation.getReservation().getCheckIn().isAfter(endDate) || roomReservation.getReservation().getCheckOut().isBefore(startDate))) {
                 return false;
             }
@@ -138,15 +140,6 @@ public class ReservationService {
         long totalNumberOfDaysReserved = 0;
         long numberOfDaysReserved = 0;
         for (RoomReservation roomReservation : room.getRoomReservationList()) {
-            //am determinat numarul de zile rezervate aferente unei camere, intr-o anumita perioada data, in functie de
-            //suprapunerea perioadei date (startDate, endDate) cu datele de checkIn si checkOut din rezervare
-            //in functie de axa timpului avem 4 cazuri:
-            //1. checkIn si checkOut sunt in afara perioadei date (adica checkIn e inainte de startDate si checkOut e dupa endDate)
-            //2. checkIn si checkOut sunt in interiorul perioadei date
-            //3. checkIn si checkOut sunt partial situate in intervalul dat, adica:
-            //        -checkIn e intre startDate si endDate, iar checkOut e dupa endDate
-            //4.      -checkIn e inainte de startDate si checkOut e intre startDate si endDate
-
             if (roomReservation.getReservation().getCheckIn().isBefore(startDate) && roomReservation.getReservation().getCheckOut().isAfter(endDate)) {
                 numberOfDaysReserved = ChronoUnit.DAYS.between(startDate, endDate);
             }
@@ -167,8 +160,7 @@ public class ReservationService {
 
     public List<Room> getAvailableRoomsOrderedByPriceBy(LocalDateTime startDate, LocalDateTime endDate, Integer numberOfPersons) {
         List<Room> sortedListOfAvailableRooms = getAvailableRooms(startDate, endDate, numberOfPersons);
-//        //OBS: clasa Room implementeaza Comparable<Room>
-//        // in clasa Room am suprascris metoda compareTo (aceasta va face comparatia dupa pretul camerei)
+
 //        Collections.sort(sortedListOfAvailableRooms);
 //        return sortedListOfAvailableRooms;
         if (sortedListOfAvailableRooms.isEmpty() || sortedListOfAvailableRooms == null) {
@@ -177,5 +169,31 @@ public class ReservationService {
         return sortedListOfAvailableRooms.stream()
                 .sorted(Comparator.comparingInt(Room::getPrice))
                 .collect(Collectors.toList());
+    }
+
+    public Map<User, Reservation> checkEndDateUsersReservations() throws MessagingException {
+       // Hotel foundedHotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " hotel not found"));
+        Map<User, Reservation> eligibleUsersByReservations = new HashMap<>();
+        List<User> allUsers =  userRepository.findAll();
+        for (User user : allUsers) {
+            for (Reservation reservation : user.getReservationList()) {
+                //reservationRepository.findAllByCheckOutBefore(LocalDateTime.now())
+                if (reservation.getCheckOut().isBefore(LocalDateTime.now()) && !isReviewAdded(user,reservation) ){
+                    eligibleUsersByReservations.put(user, reservation);
+                }
+                //mailService.sendRateReviewMessage(user.getEmail(), foundedHotel);
+            }
+        }
+        return eligibleUsersByReservations;
+    }
+
+
+    public boolean isReviewAdded (User user, Reservation reservation ){
+        Hotel reservationHotel = getReservationHotel(reservation);
+        return user.getReviewList().stream().anyMatch(r -> r.getHotel().equals(reservationHotel));
+    }
+
+    public Hotel getReservationHotel(Reservation reservation){
+        return reservation.getRoomReservationList().get(0).getRoom().getHotel();
     }
 }

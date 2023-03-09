@@ -37,17 +37,15 @@ public class JwtSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/authenticate").permitAll()
                 .antMatchers("/register").permitAll()
+                .antMatchers("/hotel/add").hasRole("ADMIN")
+                .antMatchers("/room/**").hasRole("ADMIN")
                 .antMatchers("/reservation/**").hasAnyRole("CLIENT", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                //stateless server ul sa stie ca daca userul care s a logat mai devreme sa fie lasat sa intre in aplicatie dupa un timp
-                //se trimite token ul odata cu request ul
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                //jwtRequestFilter = daca utilizatorul nu este logat ii verificam token ul si ii setam
-                //validarea token ului
-                //cand generez token il codific
+
                 .build();
     }
 

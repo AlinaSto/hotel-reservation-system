@@ -10,7 +10,11 @@ import java.util.List;
 @Entity
 public class Room {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
+    @SequenceGenerator(name = "category_seq",
+            sequenceName = "category_seq",
+            initialValue = 1,
+            allocationSize = 1)
     private Long id;
 
     @Column
@@ -20,7 +24,7 @@ public class Room {
     @Column
     private Integer numbersOfPersons;
 
-    @OneToMany(mappedBy = "room", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "room", cascade = {CascadeType.MERGE, CascadeType.PERSIST})//, CascadeType.REMOVE}, orphanRemoval = true)
     @JsonManagedReference(value ="reservation-roomReservation")
     private   List<RoomReservation> roomReservationList;
 

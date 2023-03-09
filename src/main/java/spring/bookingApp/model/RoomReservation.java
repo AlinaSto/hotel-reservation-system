@@ -10,7 +10,11 @@ import java.time.LocalDateTime;
 @Entity
 public class RoomReservation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
+    @SequenceGenerator(name = "category_seq",
+            sequenceName = "category_seq",
+            initialValue = 1,
+            allocationSize = 1)
     private Long id;
 
     @ManyToOne
