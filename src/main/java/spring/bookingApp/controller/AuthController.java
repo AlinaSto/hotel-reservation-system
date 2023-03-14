@@ -1,5 +1,6 @@
 package spring.bookingApp.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Api( tags = "User authentication")
 public class AuthController {
 
 
@@ -37,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/authenticate")
-    @ApiOperation(value = "Introdu userul si parola pentru a obtine un token.")
+    @ApiOperation(value = "Insert user and pass to get the token.")
     public String authenticate(@RequestBody AuthDTO user) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());

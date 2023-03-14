@@ -2,9 +2,13 @@ package spring.bookingApp.dto;
 
 import spring.bookingApp.model.RoleType;
 
+import javax.validation.constraints.NotBlank;
+
 public class RegisterDTO {
 
+    @NotBlank(message = "Username is mandatory")
     private String username;
+    @NotBlank(message = "Password is mandatory")
     private String password;
     private RoleType roleType;
     public RegisterDTO(String username, String password,  RoleType roleType) {

@@ -2,37 +2,19 @@ package spring.bookingApp.dto;
 
 public class AddHotelDTO {
 
-    private String roomNumber;
-    private Integer price;
-    private Integer numberOfPersons;
+    private String noOfRooms;
+
 
     public AddHotelDTO(String roomNumber, Integer price, Integer numberOfPersons) {
-        this.roomNumber = roomNumber;
-        this.price = price;
-        this.numberOfPersons = numberOfPersons;
+        this.noOfRooms = roomNumber;
     }
 
     public String getRoomNumber() {
-        return roomNumber;
+        return noOfRooms;
     }
 
     public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
+        this.noOfRooms = roomNumber;
     }
 
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public Integer getNumberOfPersons() {
-        return numberOfPersons;
-    }
-
-    public void setNumberOfPersons(Integer numberOfPersons) {
-        this.numberOfPersons = numberOfPersons;
-    }
 }
