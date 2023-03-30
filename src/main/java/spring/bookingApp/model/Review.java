@@ -27,6 +27,10 @@ public class Review {
     @JsonBackReference(value = "user-review")
     private User user;
 
+    @Column
+    String description;
+
+
     public Review(Long id, ReviewType reviewType, Hotel hotel, User user) {
         this.id = id;
         this.reviewType = reviewType;
@@ -38,6 +42,13 @@ public class Review {
 
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Hotel getHotel() {
         return hotel;

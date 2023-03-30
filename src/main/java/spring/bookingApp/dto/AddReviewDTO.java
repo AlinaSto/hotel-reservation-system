@@ -6,9 +6,12 @@ public class AddReviewDTO {
     private ReviewType reviewType;
     private Long hotelId;
 
-    public AddReviewDTO(ReviewType reviewType, Long hotelId) {
+    private String description;
+
+    public AddReviewDTO(ReviewType reviewType, Long hotelId, String description) {
         this.reviewType = reviewType;
         this.hotelId = hotelId;
+        this.description = description;
     }
 
     public ReviewType getReviewType() {
@@ -25,5 +28,13 @@ public class AddReviewDTO {
 
     public void setHotelId(Long hotelId) {
         this.hotelId = hotelId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

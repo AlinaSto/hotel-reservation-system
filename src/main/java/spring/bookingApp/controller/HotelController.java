@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import spring.bookingApp.dto.AddHotelDTO;
 import spring.bookingApp.model.Hotel;
 import spring.bookingApp.model.Review;
-import spring.bookingApp.model.Room;
 import spring.bookingApp.service.HotelService;
 
 import java.util.List;

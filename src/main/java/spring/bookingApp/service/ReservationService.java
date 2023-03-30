@@ -1,5 +1,7 @@
 package spring.bookingApp.service;
 
+import com.theokanning.openai.OpenAiService;
+import com.theokanning.openai.completion.CompletionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import spring.bookingApp.dto.AddReservationDTO;
+import spring.bookingApp.dto.ReservationResponseDTO;
 import spring.bookingApp.model.*;
 import spring.bookingApp.repository.HotelRepository;
 import spring.bookingApp.repository.ReservationRepository;
@@ -30,21 +33,18 @@ public class ReservationService {
     private HotelRepository hotelRepository;
     private MailService mailService;
 
+    private OpenAiService openAiService;
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, RoomRepository roomRepository, HotelRepository hotelRepository, MailService mailService) {
+    public ReservationService(OpenAiService openAiService, ReservationRepository reservationRepository, UserRepository userRepository, RoomRepository roomRepository, HotelRepository hotelRepository, MailService mailService) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.hotelRepository = hotelRepository;
         this.mailService = mailService;
+        this.openAiService=openAiService;
     }
 
-    //TODO
-    //in functie de locatia hotelului rezervarii, facem un call la openAPI cu prompt-ul : Recomanda-mi obiective turistice in + <locatia hotelului>
-    //mai facem o entitate Address. Un hotell are o adresa (onte-toone)
-    //Adresa va avea strada, numar, oras.
-    //voi da ca si raspuns un ReservationReponseDTO
-    public Reservation addReservation(AddReservationDTO addReservationDTO) {
+    public ReservationResponseDTO addReservation(AddReservationDTO addReservationDTO) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User foundUser = userRepository.findUserByUsername(userDetails.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
@@ -69,8 +69,24 @@ public class ReservationService {
             roomReservation.setDateCreated(LocalDateTime.now());
             reservation.getRoomReservationList().add(roomReservation);
         });
-        return reservationRepository.save(reservation);
 
+        List<String> toursitRecommnedations = getTouristRecomendations(reservation.getRoomReservationList().get(0).getRoom().getHotel().getAddress().getCity());
+        Reservation savedReservation = reservationRepository.save(reservation);
+        ReservationResponseDTO reservationResponseDTO = new ReservationResponseDTO();
+        reservationResponseDTO.setCheckIn(savedReservation.getCheckIn());
+        reservationResponseDTO.setCheckOut(savedReservation.getCheckOut());
+        reservationResponseDTO.setTouristRecommendations(toursitRecommnedations);
+        return reservationResponseDTO;
+
+    }
+
+    public List<String> getTouristRecomendations(String location) {
+        CompletionRequest completionRequest = CompletionRequest.builder()
+                .prompt("Give me tourist attractions near " + location)
+                .model("text-davinci-003")
+                .echo(true)
+                .build();
+        return openAiService.createCompletion(completionRequest).getChoices().stream().map(choice -> choice.getText()).collect(Collectors.toList());
     }
 
     public List<Room> getAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer numberOfPersons) {

@@ -8,14 +8,12 @@ import spring.bookingApp.model.Hotel;
 import spring.bookingApp.model.Review;
 import spring.bookingApp.repository.HotelRepository;
 import spring.bookingApp.repository.ReviewRepository;
-import spring.bookingApp.repository.RoomRepository;
 
 import java.util.List;
 
 @Service
 public class HotelService {
     private HotelRepository hotelRepository;
-    private RoomRepository roomRepository;
     private ReviewRepository reviewRepository;
 
     @Autowired

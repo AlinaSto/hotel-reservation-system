@@ -1,7 +1,8 @@
 package spring.bookingApp.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,15 +25,26 @@ public class Reservation {
 
 
     @OneToMany(mappedBy = "reservation", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JsonManagedReference(value="reservation-roomReservation")
     private List<RoomReservation> roomReservationList;
 
     @ManyToOne
-    @JsonIgnore
+    @JsonBackReference(value="user-reservation")
     @JoinColumn(name = "userId")
     private User user;
 
+    public Reservation(LocalDateTime checkIn, LocalDateTime checkOut, List<RoomReservation> roomReservationList, User user) {
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.roomReservationList = roomReservationList;
+        this.user = user;
+    }
+
     public Reservation() {
 
+    }
+
+    public Reservation(int i, int i1, Object roomReservationList, User foundUser) {
     }
 
     public Long getId() {

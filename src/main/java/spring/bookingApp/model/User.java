@@ -39,6 +39,16 @@ public class User {
     public User() {
     }
 
+    public User(Long id, String username, String password, String email, List<Reservation> reservationList, List<Role> roleList, List<Review> reviewList) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.reservationList = reservationList;
+        this.roleList = roleList;
+        this.reviewList = reviewList;
+    }
+
     public String getEmail() {
         return email;
     }

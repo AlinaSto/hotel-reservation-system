@@ -9,19 +9,11 @@ public enum ReviewType {
     FOUR_STARS(4),
     FIVE_STARS(5);
 
-    private List<String> descriprion;
+
     private final int reviewValue;
 
     ReviewType(final int newReviewValue) {
         this.reviewValue = newReviewValue;
-    }
-
-    public List<String> getDescriprion() {
-        return descriprion;
-    }
-
-    public void setDescriprion(List<String> descriprion) {
-        this.descriprion = descriprion;
     }
 
     public int getReviewValue() {

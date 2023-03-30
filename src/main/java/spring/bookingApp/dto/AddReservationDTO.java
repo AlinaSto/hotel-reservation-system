@@ -1,5 +1,7 @@
 package spring.bookingApp.dto;
 
+import spring.bookingApp.model.RoomReservation;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,9 @@ public class AddReservationDTO {
         this.roomsIds = roomsIds;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
+    }
+
+    public AddReservationDTO(Long id, List<RoomReservation> roomReservationList, int i, int i1) {
     }
 
     public Long getUserId() {

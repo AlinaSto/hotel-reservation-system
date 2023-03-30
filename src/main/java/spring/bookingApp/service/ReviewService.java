@@ -61,17 +61,17 @@ public class ReviewService {
         User foundUser = userService.findLoggedInUser();
         Reservation foundReservation = reservationRepository.findByUser(foundUser);
         Review foundReview = reviewRepository.findReviewByHotelAndUser(foundHotel, foundUser);
-        if (foundReview == null && (foundReservation.getCheckOut().isAfter(LocalDateTime.now()))) {
+        if (foundReview == null && (foundReservation.getCheckOut().isBefore(LocalDateTime.now()))) {
             Review review = new Review();
             review.setReviewType(addReviewDTO.getReviewType());
             review.setHotel(foundHotel);
             review.setUser(foundUser);
+            review.setDescription(addReviewDTO.getDescription());
             foundHotel.setReviewCount(foundHotel.getReviewCount() + review.getReviewType().getReviewValue());
             hotelService.update(foundHotel);
             return reviewRepository.save(review);
         } else {
             throw new ResponseStatusException(HttpStatus.ALREADY_REPORTED, " review already registered");
-
         }
     }
 }

@@ -27,12 +27,25 @@ public class Hotel {
     private List<Room> roomList;
 
     @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
     private Address address;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "hotel=review")
+    @JsonManagedReference(value = "hotel-review")
     private List<Review> reviewList;
 
+    public Hotel() {
+
+    }
+
+    public Hotel(Long id, String name, Integer reviewCount, List<Room> roomList, Address address, List<Review> reviewList) {
+        this.id = id;
+        this.name = name;
+        this.reviewCount = reviewCount;
+        this.roomList = roomList;
+        this.address = address;
+        this.reviewList = reviewList;
+    }
 
     public List<Review> getReviewList() {
         return reviewList;

@@ -25,13 +25,22 @@ public class Room {
     private Integer numbersOfPersons;
 
     @OneToMany(mappedBy = "room", cascade = {CascadeType.MERGE, CascadeType.PERSIST})//, CascadeType.REMOVE}, orphanRemoval = true)
-    @JsonManagedReference(value ="reservation-roomReservation")
+    @JsonManagedReference(value ="room-roomReservation")
     private   List<RoomReservation> roomReservationList;
 
     @ManyToOne
     @JsonBackReference(value ="hotel-room")
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
+
+    public Room(Long id, String roomNumber, Integer price, Integer numbersOfPersons, List<RoomReservation> roomReservationList, Hotel hotel) {
+        this.id = id;
+        this.roomNumber = roomNumber;
+        this.price = price;
+        this.numbersOfPersons = numbersOfPersons;
+        this.roomReservationList = roomReservationList;
+        this.hotel = hotel;
+    }
 
     public Room() {
     }

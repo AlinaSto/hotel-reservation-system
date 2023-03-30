@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import spring.bookingApp.dto.AddReservationDTO;
 import spring.bookingApp.dto.AvailabilityOfHotelRoomsDTO;
 import spring.bookingApp.dto.GetAvailabilityDTO;
-import spring.bookingApp.model.Reservation;
+import spring.bookingApp.dto.ReservationResponseDTO;
 import spring.bookingApp.model.Room;
 import spring.bookingApp.service.ReservationService;
 
@@ -25,7 +25,7 @@ public class ReservationController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Reservation> addReservation(@RequestBody AddReservationDTO addReservationDTO){
+    public ResponseEntity<ReservationResponseDTO> addReservation(@RequestBody AddReservationDTO addReservationDTO){
         return status(HttpStatus.OK).body(reservationService.addReservation(addReservationDTO));
     }
     @GetMapping("/availability")
