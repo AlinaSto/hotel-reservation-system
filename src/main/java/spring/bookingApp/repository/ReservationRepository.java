@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 Reservation findByUser(User user);
-List<Reservation> findAllByCheckOutBefore(LocalDateTime now);
-    List<Reservation> findByRoomAndUser(Room room,User user);
+//List<Reservation> findAllByCheckOutBefore(LocalDateTime now);
+ //   List<Reservation> findByRoomAndUser(Room room,User user);
 }

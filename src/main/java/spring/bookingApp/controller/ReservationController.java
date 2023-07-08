@@ -7,6 +7,7 @@ import spring.bookingApp.dto.AddReservationDTO;
 import spring.bookingApp.dto.AvailabilityOfHotelRoomsDTO;
 import spring.bookingApp.dto.GetAvailabilityDTO;
 import spring.bookingApp.dto.ReservationResponseDTO;
+import spring.bookingApp.model.Address;
 import spring.bookingApp.model.Room;
 import spring.bookingApp.service.ReservationService;
 
@@ -28,9 +29,13 @@ public class ReservationController {
     public ResponseEntity<ReservationResponseDTO> addReservation(@RequestBody AddReservationDTO addReservationDTO){
         return status(HttpStatus.OK).body(reservationService.addReservation(addReservationDTO));
     }
+    @GetMapping("/touristRecomendations")
+    public List<String> getTouristRecomendations(@RequestBody Address address) {
+        return (List<String>) status(HttpStatus.OK).body(reservationService.getTouristRecomendations(String.valueOf(address)));
+    }
+
     @GetMapping("/availability")
     public ResponseEntity<List<Room>> getAvailableRooms(@RequestBody GetAvailabilityDTO getAvailabilityDTO){
-        //1. de facut un DTO ca sa prindem informatiile startDate, endDate, numberOfpersons
         return status(HttpStatus.OK).body(reservationService.getAvailableRooms(getAvailabilityDTO.getStartDate(), getAvailabilityDTO.getEndDate(), getAvailabilityDTO.getNumberOfPersons()));
     }
     @GetMapping("/numberOfAvailableRooms")

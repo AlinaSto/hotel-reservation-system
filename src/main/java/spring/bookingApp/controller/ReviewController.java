@@ -24,7 +24,7 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
     @PostMapping("/add")
-    public ResponseEntity<Review> addVote(@RequestBody AddReviewDTO addReviewDTO){
+    public ResponseEntity<Review> addReview(@RequestBody AddReviewDTO addReviewDTO){
         return status(HttpStatus.OK).body(reviewService.addReview(addReviewDTO));
     }
 }

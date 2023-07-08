@@ -44,6 +44,9 @@ public class ReservationService {
         this.openAiService=openAiService;
     }
 
+    public ReservationService() {
+    }
+
     public ReservationResponseDTO addReservation(AddReservationDTO addReservationDTO) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User foundUser = userRepository.findUserByUsername(userDetails.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));

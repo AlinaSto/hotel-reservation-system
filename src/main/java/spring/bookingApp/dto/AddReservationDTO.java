@@ -21,7 +21,7 @@ public class AddReservationDTO {
         this.checkOut = checkOut;
     }
 
-    public AddReservationDTO(Long id, List<RoomReservation> roomReservationList, int i, int i1) {
+    public AddReservationDTO() {
     }
 
     public Long getUserId() {

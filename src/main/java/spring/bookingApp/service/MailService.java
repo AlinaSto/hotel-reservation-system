@@ -34,8 +34,7 @@ public class MailService {
         helper.setTo(recepientMail);
 
         helper.setSubject("Rate your stay at " + hotel.getName());
-        helper.setText("Let us know how was yor stay at" + hotel.getName()+ " from date" + hotel.getAddress());
-        helper.setText("review", hotel.getReviewList().add(new Review()));
+        helper.setText("Let us know how was yor stay at " + hotel.getName()+  " here: https://localhost:8080/review/add");
         emailSender.send(message);
         System.out.println("Email Message Sent Successfully");
 
